@@ -22,11 +22,9 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
     super.initState();
     isFavorite = widget.isFavorite;
 
-    // Initialize animation controller
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
     _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
 
-    // Start animation on screen load
     _controller.forward();
   }
 
@@ -68,47 +66,25 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Hero(
-              tag: widget.recipe["name"]!,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: Image.asset(
-                  widget.recipe["image"]!,
-                  width: double.infinity,
-                  height: 250,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Fade-in animation for text content
-            FadeTransition(
-              opacity: _fadeAnimation,
-              child: Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text("🍽 Ingredients:", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87)),
-                      const SizedBox(height: 8),
-                      Text(widget.recipe["ingredients"]!, style: const TextStyle(fontSize: 16, color: Colors.black54)),
-                      const SizedBox(height: 16),
-                      const Text("📖 Instructions:", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87)),
-                      const SizedBox(height: 8),
-                      Text(widget.recipe["instructions"]!, style: const TextStyle(fontSize: 16, color: Colors.black54)),
-                    ],
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Hero(
+                tag: widget.recipe["name"]!,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Image.asset(
+                    widget.recipe["image"]!,
+                    width: double.infinity,
+                    height: 250,
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
