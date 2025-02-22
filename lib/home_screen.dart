@@ -41,32 +41,86 @@ final List<Map<String, String>> recipes = [
   }
 ];
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  TextEditingController searchController = TextEditingController();
+  List<Map<String, String>> filteredRecipes = List.from(recipes);
+
+  void searchRecipes(String query) {
+    setState(() {
+      filteredRecipes = recipes
+          .where((recipe) =>
+              recipe["name"]!.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Recipe Book')),
-      body: ListView.builder(
-        itemCount: recipes.length,
-        itemBuilder: (context, index) {
-          return Card(
-            margin: const EdgeInsets.all(8),
-            child: ListTile(
-              leading: Image.asset(recipes[index]["image"]!, width: 60, height: 60, fit: BoxFit.cover),
-              title: Text(recipes[index]["name"]!, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DetailsScreen(recipe: recipes[index]),
-                  ),
-                );
-              },
+      appBar: AppBar(
+        title: const Text('Recipe Book'),
+        backgroundColor: Colors.orangeAccent,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: "Search Recipes...",
+                prefixIcon: const Icon(Icons.search),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onChanged: searchRecipes,
             ),
-          );
-        },
+            const SizedBox(height: 10),
+            Expanded(
+              child: ListView.builder(
+                itemCount: filteredRecipes.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    elevation: 4,
+                    margin: const EdgeInsets.all(10),
+                    child: ListTile(
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.asset(filteredRecipes[index]["image"]!,
+                            width: 60, height: 60, fit: BoxFit.cover),
+                      ),
+                      title: Text(
+                        filteredRecipes[index]["name"]!,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      trailing: const Icon(Icons.arrow_forward_ios,
+                          color: Colors.grey),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                DetailsScreen(recipe: filteredRecipes[index]),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
