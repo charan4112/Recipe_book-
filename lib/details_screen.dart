@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class DetailsScreen extends StatefulWidget {
   final Map<String, String> recipe;
   final Function(Map<String, String>) toggleFavorite;
@@ -10,13 +12,20 @@ class DetailsScreen extends StatefulWidget {
   _DetailsScreenState createState() => _DetailsScreenState();
 }
 
-class _DetailsScreenState extends State<DetailsScreen> {
+class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProviderStateMixin {
   late bool isFavorite;
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
     isFavorite = widget.isFavorite;
+
+    _animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
+    _scaleAnimation = Tween(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
   }
 
   void toggleFavoriteStatus() {
@@ -24,13 +33,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
       isFavorite = !isFavorite;
     });
     widget.toggleFavorite(widget.recipe);
+    _animationController.forward().then((_) => _animationController.reverse());
   }
 
   void addIngredientsToShoppingList() {
     List<String> ingredientsList = widget.recipe["ingredients"]!.split(",");
     widget.addToShoppingList(ingredientsList);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Added ingredients to shopping list!"), duration: Duration(seconds: 2)),
+      const SnackBar(content: Text("Added ingredients to shopping list!"), duration: Duration(seconds: 2)),
     );
   }
 
@@ -43,8 +53,32 @@ class _DetailsScreenState extends State<DetailsScreen> {
       ),
       body: Column(
         children: [
+          Hero(
+            tag: widget.recipe["name"]!,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Image.asset(
+                widget.recipe["image"]!,
+                width: double.infinity,
+                height: 250,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          ScaleTransition(
+            scale: _scaleAnimation,
+            child: IconButton(
+              icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border, color: Colors.red, size: 36),
+              onPressed: toggleFavoriteStatus,
+            ),
+          ),
+          const SizedBox(height: 10),
           ElevatedButton(
             onPressed: addIngredientsToShoppingList,
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            ),
             child: const Text("🛒 Add Ingredients to Shopping List"),
           ),
         ],

@@ -8,12 +8,20 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   List<Map<String, String>> favoriteRecipes = [];
   List<Map<String, String>> recentlyViewed = [];
   List<Map<String, String>> filteredRecipes = allRecipes;
-  List<String> shoppingList = []; // 🛒 Shopping List Storage
+  List<String> shoppingList = []; // Shopping List
   String searchQuery = "";
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
+    _animationController.forward();
+  }
 
   void toggleFavorite(Map<String, String> recipe) {
     setState(() {
@@ -21,18 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
         favoriteRecipes.remove(recipe);
       } else {
         favoriteRecipes.add(recipe);
-      }
-    });
-  }
-
-  void addToRecentlyViewed(Map<String, String> recipe) {
-    setState(() {
-      if (recentlyViewed.contains(recipe)) {
-        recentlyViewed.remove(recipe);
-      }
-      recentlyViewed.insert(0, recipe);
-      if (recentlyViewed.length > 5) {
-        recentlyViewed.removeLast();
       }
     });
   }
@@ -46,57 +42,26 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void addToShoppingList(List<String> ingredients) {
-    setState(() {
-      for (var ingredient in ingredients) {
-        if (!shoppingList.contains(ingredient)) {
-          shoppingList.add(ingredient);
-        }
-      }
-    });
-  }
-
-  void removeFromShoppingList(String ingredient) {
-    setState(() {
-      shoppingList.remove(ingredient);
-    });
-  }
-
-  void showShoppingList() {
-    showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(16),
-          height: 350,
-          child: Column(
-            children: [
-              const Text(
-                "🛒 Shopping List",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const Divider(),
-              shoppingList.isEmpty
-                  ? const Text("Your shopping list is empty!")
-                  : Expanded(
-                      child: ListView.builder(
-                        itemCount: shoppingList.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            title: Text(shoppingList[index]),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => removeFromShoppingList(shoppingList[index]),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-            ],
-          ),
-        );
-      },
+  void navigateToDetails(Map<String, String> recipe) {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return DetailsScreen(
+            recipe: recipe,
+            toggleFavorite: toggleFavorite,
+            isFavorite: favoriteRecipes.contains(recipe),
+            addToShoppingList: addToShoppingList,
+          );
+        },
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          var begin = const Offset(1.0, 0.0);
+          var end = Offset.zero;
+          var curve = Curves.easeInOut;
+          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          return SlideTransition(position: animation.drive(tween), child: child);
+        },
+      ),
     );
   }
 
@@ -107,12 +72,6 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Recipe Book', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.deepOrangeAccent,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.shopping_cart, color: Colors.white),
-            onPressed: showShoppingList,
-          ),
-        ],
       ),
       body: Column(
         children: [
@@ -140,47 +99,39 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     itemBuilder: (context, index) {
                       return GestureDetector(
-                        onTap: () {
-                          addToRecentlyViewed(filteredRecipes[index]);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DetailsScreen(
-                                recipe: filteredRecipes[index],
-                                toggleFavorite: toggleFavorite,
-                                isFavorite: favoriteRecipes.contains(filteredRecipes[index]),
-                                addToShoppingList: addToShoppingList, // Pass function to DetailsScreen
-                              ),
-                            ),
-                          );
-                        },
-                        child: Card(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                          elevation: 4,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Hero(
-                                tag: filteredRecipes[index]["name"]!,
-                                child: ClipRRect(
-                                  borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-                                  child: Image.asset(
-                                    filteredRecipes[index]["image"]!,
-                                    height: 120,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
+                        onTap: () => navigateToDetails(filteredRecipes[index]),
+                        child: ScaleTransition(
+                          scale: Tween(begin: 0.9, end: 1.0).animate(
+                            CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+                          ),
+                          child: Card(
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                            elevation: 4,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Hero(
+                                  tag: filteredRecipes[index]["name"]!,
+                                  child: ClipRRect(
+                                    borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+                                    child: Image.asset(
+                                      filteredRecipes[index]["image"]!,
+                                      height: 120,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  filteredRecipes[index]["name"]!,
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                  textAlign: TextAlign.center,
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    filteredRecipes[index]["name"]!,
+                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       );
