@@ -1,82 +1,61 @@
 import 'package:flutter/material.dart';
 import 'details_screen.dart';
 
-class HomeScreen extends StatefulWidget {
+// Dummy Recipe Data
+final List<Map<String, String>> recipes = [
+  {
+    "name": "Chicken Biryani",
+    "image": "assets/Chicken_Biriyani.JPG",
+    "ingredients": "Rice, Chicken, Spices, Yogurt",
+    "instructions": "Cook chicken with spices, add rice, cook until done."
+  },
+  {
+    "name": "Chicken Curry",
+    "image": "assets/Chicken_Curry.JPG",
+    "ingredients": "Chicken, Tomatoes, Onions, Spices",
+    "instructions": "Fry onions, add tomatoes, spices, and chicken. Cook well."
+  },
+  {
+    "name": "Fish Starter",
+    "image": "assets/Fish_Starter.JPG",
+    "ingredients": "Fish, Lemon, Garlic, Spices",
+    "instructions": "Marinate fish, grill until golden brown."
+  },
+  {
+    "name": "Ice Cream",
+    "image": "assets/Icecream.JPG",
+    "ingredients": "Milk, Sugar, Cream, Fruits",
+    "instructions": "Blend ingredients, freeze for 4 hours."
+  },
+  {
+    "name": "Shrimp Starter",
+    "image": "assets/Shrimp_Starter.JPG",
+    "ingredients": "Shrimp, Garlic, Butter, Lemon",
+    "instructions": "Sauté shrimp in butter and garlic, squeeze lemon on top."
+  },
+  {
+    "name": "Milkshake",
+    "image": "assets/Milkshake.JPG",
+    "ingredients": "Milk, Ice Cream, Sugar, Flavors",
+    "instructions": "Blend all ingredients until smooth."
+  }
+];
+
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  final List<Map<String, dynamic>> recipes = [
-    {
-      "title": "Chicken Biriyani",
-      "ingredients": "Chicken, Basmati Rice, Spices, Saffron, Yogurt",
-      "instructions": "1. Marinate chicken.\n2. Cook rice separately.\n3. Layer and slow cook.",
-      "category": "Dinner",
-      "image": "assets/Chicken_Biriyani.JPG"
-    },
-    {
-      "title": "Chicken Curry",
-      "ingredients": "Chicken, Curry Powder, Coconut Milk, Onion, Garlic, Ginger",
-      "instructions": "1. Sauté onion, garlic, and ginger.\n2. Add chicken and curry powder.\n3. Pour in coconut milk and simmer.",
-      "category": "Lunch",
-      "image": "assets/Chicken_Curry.JPG"
-    },
-    {
-      "title": "Fish Starter",
-      "ingredients": "Fish, Turmeric, Garlic, Lemon, Spices",
-      "instructions": "1. Marinate fish.\n2. Shallow fry until golden brown.\n3. Serve with mint chutney.",
-      "category": "Starter",
-      "image": "assets/Fish_Starter.JPG"
-    },
-    {
-      "title": "Ice Cream",
-      "ingredients": "Milk, Cream, Sugar, Strawberries, Vanilla",
-      "instructions": "1. Mix ingredients.\n2. Freeze until firm.\n3. Serve with toppings.",
-      "category": "Dessert",
-      "image": "assets/Icecream.JPG"
-    },
-    {
-      "title": "Shrimp Starter",
-      "ingredients": "Shrimp, Chili Powder, Garlic, Lemon, Butter",
-      "instructions": "1. Sauté shrimp in garlic butter.\n2. Sprinkle chili powder.\n3. Garnish with coriander.",
-      "category": "Starter",
-      "image": "assets/Shrimp_Starter.JPG"
-    },
-    {
-      "title": "Milkshake",
-      "ingredients": "Milk, Ice Cream, Chocolate, Whipped Cream, Banana",
-      "instructions": "1. Blend all ingredients.\n2. Pour into glass.\n3. Top with whipped cream and cherries.",
-      "category": "Beverage",
-      "image": "assets/Milkshake.JPG"
-    }
-  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Recipe Book")),
+      appBar: AppBar(title: const Text('Recipe Book')),
       body: ListView.builder(
         itemCount: recipes.length,
         itemBuilder: (context, index) {
           return Card(
-            elevation: 3,
-            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+            margin: const EdgeInsets.all(8),
             child: ListTile(
-              leading: Image.asset(
-                recipes[index]["image"]!,
-                width: 50,
-                height: 50,
-                fit: BoxFit.cover,
-              ),
-              title: Text(
-                recipes[index]["title"]!,
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text("Category: ${recipes[index]["category"]}"),
-              trailing: Icon(Icons.arrow_forward),
+              leading: Image.asset(recipes[index]["image"]!, width: 60, height: 60, fit: BoxFit.cover),
+              title: Text(recipes[index]["name"]!, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               onTap: () {
                 Navigator.push(
                   context,
