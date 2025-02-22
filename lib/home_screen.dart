@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'details_screen.dart';
-import 'favorites_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,6 +12,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, String>> favoriteRecipes = [];
   List<Map<String, String>> recentlyViewed = [];
   List<Map<String, String>> filteredRecipes = allRecipes;
+  List<String> shoppingList = []; // 🛒 Shopping List Storage
   String searchQuery = "";
 
   void toggleFavorite(Map<String, String> recipe) {
@@ -46,6 +46,60 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void addToShoppingList(List<String> ingredients) {
+    setState(() {
+      for (var ingredient in ingredients) {
+        if (!shoppingList.contains(ingredient)) {
+          shoppingList.add(ingredient);
+        }
+      }
+    });
+  }
+
+  void removeFromShoppingList(String ingredient) {
+    setState(() {
+      shoppingList.remove(ingredient);
+    });
+  }
+
+  void showShoppingList() {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          height: 350,
+          child: Column(
+            children: [
+              const Text(
+                "🛒 Shopping List",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const Divider(),
+              shoppingList.isEmpty
+                  ? const Text("Your shopping list is empty!")
+                  : Expanded(
+                      child: ListView.builder(
+                        itemCount: shoppingList.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(shoppingList[index]),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => removeFromShoppingList(shoppingList[index]),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,15 +109,8 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.deepOrangeAccent,
         actions: [
           IconButton(
-            icon: const Icon(Icons.favorite, color: Colors.white),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FavoritesScreen(favoriteRecipes: favoriteRecipes),
-                ),
-              );
-            },
+            icon: const Icon(Icons.shopping_cart, color: Colors.white),
+            onPressed: showShoppingList,
           ),
         ],
       ),
@@ -80,64 +127,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          if (recentlyViewed.isNotEmpty) ...[
-            const Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Text(
-                "Recently Viewed Recipes",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
-              ),
-            ),
-            SizedBox(
-              height: 160,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: recentlyViewed.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailsScreen(
-                            recipe: recentlyViewed[index],
-                            toggleFavorite: toggleFavorite,
-                            isFavorite: favoriteRecipes.contains(recentlyViewed[index]),
-                          ),
-                        ),
-                      );
-                    },
-                    child: Card(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                      elevation: 4,
-                      margin: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Column(
-                        children: [
-                          ClipRRect(
-                            borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-                            child: Image.asset(
-                              recentlyViewed[index]["image"]!,
-                              width: 120,
-                              height: 100,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              recentlyViewed[index]["name"]!,
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
           Expanded(
             child: filteredRecipes.isEmpty
                 ? const Center(child: Text("No recipes found!", style: TextStyle(fontSize: 18, color: Colors.grey)))
@@ -160,6 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 recipe: filteredRecipes[index],
                                 toggleFavorite: toggleFavorite,
                                 isFavorite: favoriteRecipes.contains(filteredRecipes[index]),
+                                addToShoppingList: addToShoppingList, // Pass function to DetailsScreen
                               ),
                             ),
                           );
