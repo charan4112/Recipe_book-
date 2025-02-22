@@ -2,19 +2,20 @@ import 'package:flutter/material.dart';
 import 'home_screen.dart';
 
 void main() {
-  runApp(const RecipeApp());
+  runApp(const RecipeBookApp());
 }
 
-class RecipeApp extends StatelessWidget {
-  const RecipeApp({super.key});
+class RecipeBookApp extends StatelessWidget {
+  const RecipeBookApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Recipe Book',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.orange,
-        scaffoldBackgroundColor: Colors.white,
+        primarySwatch: Colors.deepOrange,
+        scaffoldBackgroundColor: Colors.grey[100],
       ),
       home: const HomeScreen(),
     );
