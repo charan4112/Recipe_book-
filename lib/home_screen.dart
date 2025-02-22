@@ -1,4 +1,4 @@
-import 'favorites_screen.dart'; // Import FavoritesScreen
+import 'favorites_screen.dart';
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, String>> favoriteRecipes = [];
@@ -34,7 +34,62 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: // Existing body content
+      body: Expanded(
+        child: GridView.builder(
+          itemCount: filteredRecipes.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 0.8,
+          ),
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DetailsScreen(
+                      recipe: filteredRecipes[index],
+                      toggleFavorite: toggleFavorite,
+                      isFavorite: favoriteRecipes.contains(filteredRecipes[index]),
+                    ),
+                  ),
+                );
+              },
+              child: Card(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                elevation: 4,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Hero(
+                      tag: filteredRecipes[index]["name"]!,
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+                        child: Image.asset(
+                          filteredRecipes[index]["image"]!,
+                          height: 120,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        filteredRecipes[index]["name"]!,
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }
