@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/details_screen.dart';
+import 'screens/favorites_screen.dart';
 
 void main() {
   runApp(const RecipeBookApp());
@@ -14,10 +16,18 @@ class RecipeBookApp extends StatelessWidget {
       title: 'Recipe Book',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        brightness: Brightness.light,
         primarySwatch: Colors.deepOrange,
-        scaffoldBackgroundColor: Colors.grey[100],
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const HomeScreen(),
+      darkTheme: ThemeData(brightness: Brightness.dark),
+      themeMode: ThemeMode.system, // Supports Dark Mode
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const HomeScreen(),
+        '/details': (context) => const DetailsScreen(),
+        '/favorites': (context) => const FavoritesScreen(),
+      },
     );
   }
 }

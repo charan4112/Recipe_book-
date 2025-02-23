@@ -1,91 +1,33 @@
 import 'package:flutter/material.dart';
 
-class DetailsScreen extends StatefulWidget {
+class DetailsScreen extends StatelessWidget {
   final Map<String, String> recipe;
-  const DetailsScreen({super.key, required this.recipe});
-
-  @override
-  _DetailsScreenState createState() => _DetailsScreenState();
-}
-
-class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  bool isFavorite = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-  }
-
-  void toggleFavorite() {
-    setState(() {
-      isFavorite = !isFavorite;
-    });
-  }
+  final Function(Map<String, String>) toggleFavorite;
+  const DetailsScreen(
+      {super.key, required this.recipe, required this.toggleFavorite});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.recipe["name"]!),
-        backgroundColor: Colors.deepOrangeAccent,
-        actions: [
-          IconButton(
-            icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border, color: Colors.white),
-            onPressed: toggleFavorite,
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text(recipe["name"]!)),
       body: Column(
         children: [
-          // Recipe Image
           Hero(
-            tag: widget.recipe["name"]!,
-            child: Image.asset(widget.recipe["image"]!, height: 200, width: double.infinity, fit: BoxFit.cover),
+            tag: recipe["name"]!,
+            child: Image.asset(recipe["image"]!,
+                height: 250, width: double.infinity, fit: BoxFit.cover),
           ),
-          // Tab Bar
-          TabBar(
-            controller: _tabController,
-            indicatorColor: Colors.deepOrange,
-            labelColor: Colors.deepOrange,
-            unselectedLabelColor: Colors.black54,
-            tabs: const [
-              Tab(text: "Ingredients"),
-              Tab(text: "Steps"),
-              Tab(text: "Nutrition"),
-            ],
+          const SizedBox(height: 20),
+          ElevatedButton.icon(
+            icon: Icon(Icons.favorite, color: Colors.red),
+            label: const Text("Add to Favorites"),
+            onPressed: () => toggleFavorite(recipe),
           ),
-          // Tab Views
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                // Ingredients Tab
-                ListView(
-                  padding: const EdgeInsets.all(10),
-                  children: widget.recipe["ingredients"]!.split(",").map((ingredient) {
-                    return Card(
-                      elevation: 2,
-                      child: ListTile(
-                        leading: const Icon(Icons.check_circle, color: Colors.green),
-                        title: Text(ingredient),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                // Steps Tab
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(widget.recipe["steps"]!, style: const TextStyle(fontSize: 16)),
-                ),
-                // Nutrition Tab
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(widget.recipe["nutrition"]!, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                ),
-              ],
-            ),
+          const SizedBox(height: 20),
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: Text("Recipe details and instructions go here...",
+                style: TextStyle(fontSize: 16)),
           ),
         ],
       ),
