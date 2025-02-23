@@ -1,17 +1,19 @@
 class Recipe {
   final String id;
   final String name;
-  final String imageUrl;
-  final List<String> ingredients;
-  final String instructions;
+  final String imagePath;
+  final String description;
   bool isFavorite;
 
   Recipe({
     required this.id,
     required this.name,
-    required this.imageUrl,
-    required this.ingredients,
-    required this.instructions,
+    required this.imagePath,
+    required this.description,
     this.isFavorite = false,
   });
+
+  void toggleFavorite() {
+    isFavorite = !isFavorite;
+  }
 }

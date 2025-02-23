@@ -1,15 +1,19 @@
 name: recipe_book
-description: "A fully functional recipe book app in Flutter."
-publish_to: 'none'
+description: "A beautifully designed Recipe Book Flutter app with navigation and state management."
+
+publish_to: "none" # Prevents accidental publishing
+
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.6.1
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  provider: ^6.0.5  # For state management
+
+  cupertino_icons: ^1.0.8
+  provider: ^6.0.5 # State management
 
 dev_dependencies:
   flutter_test:
@@ -18,10 +22,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
   assets:
     - assets/Chicken_Biriyani.JPG
     - assets/Chicken_Curry.JPG
     - assets/Fish_Starter.JPG
     - assets/Icecream.JPG
     - assets/Shrimp_Starter.JPG
-    - assets/Milkshake.JPG
+    - assets/Milkshake.JPG # Ensure no space in file names
