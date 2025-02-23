@@ -12,7 +12,7 @@ class DetailsScreen extends StatelessWidget {
     final recipe = recipeProvider.findById(recipeId);
 
     return Scaffold(
-      appBar: AppBar(title: Text(recipe.name)),
+      appBar: AppBar(title: Text(recipe.name), backgroundColor: Colors.orange),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -35,9 +35,7 @@ class DetailsScreen extends StatelessWidget {
               icon: Icon(recipe.isFavorite ? Icons.favorite : Icons.favorite_border),
               label: Text(recipe.isFavorite ? 'Unfavorite' : 'Mark as Favorite'),
               onPressed: () => recipeProvider.toggleFavoriteStatus(recipe.id),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: recipe.isFavorite ? Colors.red : Colors.blue,
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: recipe.isFavorite ? Colors.red : Colors.blue),
             ),
           ],
         ),
