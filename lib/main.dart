@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/recipe_provider.dart';
 import 'screens/home_screen.dart';
+import 'screens/details_screen.dart';
+import 'screens/favorites_screen.dart';
 
 void main() {
-  runApp(const RecipeBookApp());
+  runApp(RecipeBookApp());
 }
 
 class RecipeBookApp extends StatelessWidget {
-  const RecipeBookApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -17,8 +17,16 @@ class RecipeBookApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Recipe Book',
-        theme: ThemeData(primarySwatch: Colors.orange),
-        home: const HomeScreen(),
+        theme: ThemeData(
+          primarySwatch: Colors.deepOrange,
+          scaffoldBackgroundColor: Colors.white,
+        ),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => HomeScreen(),
+          '/details': (context) => DetailsScreen(),
+          '/favorites': (context) => FavoritesScreen(),
+        },
       ),
     );
   }
